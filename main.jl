@@ -38,28 +38,6 @@ for st1_i in 1:length(states)
         st2 = states[st2_i]
         n1k, n2k, lk, sign_k = st2
         # println(st1, " ", st2)
-        val = state_overlap(n1j, n2j, n1k, n2k, lj, lk, xi1j, xi2j, xi1k, xi2k; sign_j=sign_j, sign_k=sign_k )
-        # println(val)
-        # println("---")
-        # println(val * coeff)
-        S1[st1_i, st2_i] = val 
-        S2[st1_i, st2_i] = val * coeff
-    end
-end
-println()
-println(display(S1))
-println(display(S2))
-println()
-
-S1 = zeros(Float64, length(states), length(states))
-S2 = zeros(Float64, length(states), length(states))
-for st1_i in 1:length(states)
-    st1 = states[st1_i]
-    n1j, n2j, lj, sign_j = st1
-    for st2_i in 1:length(states)
-        st2 = states[st2_i]
-        n1k, n2k, lk, sign_k = st2
-        # println(st1, " ", st2)
         val = state_overlap_old(n1j, n2j, n1k, n2k, lj, lk, xi1j, xi2j, xi1k, xi2k; sign_j=sign_j, sign_k=sign_k )
         # println(val)
         # println("---")
