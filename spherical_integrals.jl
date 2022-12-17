@@ -7,6 +7,7 @@ using Infinity
 using AssociatedLegendrePolynomials
 
 function Y(l, m, θ, ϕ)
+    # https://mathworld.wolfram.com/SphericalHarmonic.html
     if m >= 0
         return λlm(l, m, cos(θ)) * exp(1im*m*ϕ)
     else

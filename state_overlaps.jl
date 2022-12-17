@@ -23,16 +23,14 @@ function two_states_num_integral(n1, l1, m1, n2, l2, m2; η=1., rtol=1e-8)
     return spherical_int * radial_int
 end
 
-function state_overlap_old(n1j::Int64, n2j::Int64, n1k::Int64, n2k::Int64, lj::Int64, lk::Int64, xi1j, xi2j, xi1k, xi2k; sign_j=+1, sign_k=+1, rtol=1e-8)
-    println("function state_overlap")
+function state_overlap_old(n1j::Int64, n2j::Int64, n1k::Int64, n2k::Int64, lj::Int64, lk::Int64, xi1j, xi2j, xi1k, xi2k; sign_j=+1, sign_k=+1, rtol=1e-10)
     sign = sign_j * sign_k
     ret = 0.
     l = abs(lj - lk)
     while l <= lj + lk
-        println(lj, " ", lk, " ", l)
-        if lj == 1 && lk == 1 && l == 2
-            break
-        end
+        # if lj == 1 && lk == 1 && l == 2
+        #     break
+        # end
         spherical_part = sqrt((2*lj + 1)*(2*lk + 1)) / (2*l + 1) * (-1)^(lj + lk) * 
             float(CGcoefficient.CG(lj, lk, l, 0, 0, 0))^2
         
@@ -53,20 +51,11 @@ function state_overlap_old(n1j::Int64, n2j::Int64, n1k::Int64, n2k::Int64, lj::I
             0, Infinity.∞, rtol=rtol
             )
         
-        println("state_overlap")
-        println(float(CGcoefficient.CG(lj, lk, l, 0, 0, 0))^2)
-        println(sqrt((2*lj + 1)*(2*lk + 1)) / (2*l + 1) * (-1)^(lj + lk))
-        println("spherical_part", spherical_part)
-        println(integral11)
-        println(integral12)
-        println(integral21)
-        println(integral22)
-        
-        
-        ret += spherical_part * (integral11*integral12 + sign*integral21*integral22)
+        # ret += spherical_part * (integral11*integral12 + sign*integral21*integral22)
+        ret += (integral11*integral12 + sign*integral21*integral22)
         l += 2
     end
-    return ret / 2
+    return ret  / 2
 end
 
 function state_overlap_old2(n1j::Int64, n2j::Int64, n1k::Int64, n2k::Int64, lj::Int64, lk::Int64, xi1j, xi2j, xi1k, xi2k; sign_j=+1, sign_k=+1, rtol=1e-8)
@@ -109,7 +98,6 @@ function state_overlap_old2(n1j::Int64, n2j::Int64, n1k::Int64, n2k::Int64, lj::
 end
 
 function state_overlap_old3(n1j::Int64, n2j::Int64, n1k::Int64, n2k::Int64, lj::Int64, lk::Int64, xi1j, xi2j, xi1k, xi2k; sign_j=+1, sign_k=+1, rtol=1e-8)
-    println("function state_overlap")
     sign = sign_j * sign_k
     ret = 0.
     # (n1j, lj), (n2j, lj) -> (n1k, lk), (n2k, lk)
@@ -148,7 +136,6 @@ function state_overlap_old3(n1j::Int64, n2j::Int64, n1k::Int64, n2k::Int64, lj::
 end
 
 function state_overlap(n1j::Int64, n2j::Int64, n1k::Int64, n2k::Int64, lj::Int64, lk::Int64, xi1j, xi2j, xi1k, xi2k; sign_j=+1, sign_k=+1, rtol=1e-8)
-    println("function state_overlap")
     sign = sign_j * sign_k
     ret = 0.
     # (n1j, lj), (n2j, lj) -> (n1k, lk), (n2k, lk)
@@ -196,4 +183,45 @@ function state_overlap(n1j::Int64, n2j::Int64, n1k::Int64, n2k::Int64, lj::Int64
         end
     end
     return ret 
+end
+
+function state_overlap_two(n1j::Int64, n2j::Int64, lj::Int64, n1k::Int64, n2k::Int64, lk::Int64)
+    if lk != lj
+        return 0.
+    end
+    int1 = 0.
+    if n1j == n1k
+        # println("n1j == n1k ", n1k)
+        int1 += n1k
+    end
+    if n1j == n1k+1
+        # println("n1j == n1k+1 ", -sqrt((n1k - l)*(n1k + l + 1))/2)
+        int1 += -sqrt((n1k - lj)*(n1k + lj + 1))/2
+    end
+    if n1j == n1k-1
+        # println("n1j == n1k-1 ", -sqrt((n1k + l)*(n1k - l - 1))/2)
+        int1 += -sqrt((n1k + lj)*(n1k - lj - 1))/2
+    end
+
+    int2 = 0.
+    if n2j == n2k
+        # println("n1j == n1k ", n1k)
+        int2 += n2k
+    end
+    if n2j == n2k+1
+        # println("n2j == n2k+1 ", -sqrt((n2k - l)*(n2k + l + 1))/2)
+        int2 += -sqrt((n2k - lk)*(n2k + lk + 1))/2
+    end
+    if n2j == n2k-1
+        # println("n2j == n2k-1 ", -sqrt((n2k + l)*(n2k - l - 1))/2)
+        int2 += -sqrt((n2k + lk)*(n2k - lk - 1))/2
+    end
+    
+    return int1 * int2
+end
+
+function state_overlap_exact(n1j::Int64, n2j::Int64, n1k::Int64, n2k::Int64, lj::Int64, lk::Int64, xi1j, xi2j, xi1k, xi2k; sign_j=+1, sign_k=+1)
+    sign = sign_j * sign_k
+    return (state_overlap_two(n1j, n2j, lj, n1k, n2k, lk) + 
+        sign * state_overlap_two(n1j, n2j, lj, n2k, n1k, lk))/2
 end
