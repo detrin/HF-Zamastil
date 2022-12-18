@@ -13,10 +13,10 @@ function get_operators(states, xi1j, xi2j, xi1k, xi2k, Z, η)
     Ham_0 = zeros(Float64, length(states), length(states))
     S_mat = zeros(Float64, length(states), length(states))
     W_mat = zeros(Float64, length(states), length(states))
-    for st1_i in 1:length(states)
+    for st1_i in length(states):-1:1
         st1 = states[st1_i]
         n1j, n2j, lj, sign_j = st1
-        for st2_i in 1:length(states)
+        for st2_i in length(states):-1:1
             st2 = states[st2_i]
             n1k, n2k, lk, sign_k = st2
             # println(st1, " ", st2)

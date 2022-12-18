@@ -86,7 +86,7 @@ function R(n, l, η, r; a0=1.0)
 end
 
 
-@memoize function J_integral(args)
+function J_integral(args)
     eta, xi, a, b, l = args
     # println("J_integral: ", eta, " ", xi, " ", a, " ", b, " ", l)
     ret = 0.
@@ -97,7 +97,7 @@ end
     return factorial(a - l - 1) * ret
 end 
 
-@memoize function I_integral(args)
+function I_integral(args)
     eta, xi, a, b, l = args
     return J_integral([eta, xi, a, b, l]) + J_integral([xi, eta, b, a, l])
 end
@@ -117,7 +117,7 @@ end
     )
 end
 
-@memoize function square_brackets_equation(args)
+function square_brackets_equation(args)
     n1, n2, n3, n4, l1_, l2_, l3_, l4_, xi1, xi2, xi3, xi4, target = args
     l1 = l1_; l2 = l2_; l3 = l3_; l4 = l4_; 
     if target == :l4
@@ -154,7 +154,7 @@ end
     return ret / c0
 end
 
-@memoize function square_brackets(args)
+function square_brackets(args)
     n1, n2, n3, n4, l1, l2, l3, l4, xi1, xi2, xi3, xi4 = args
     rtol=1e-8
     if (n1-1 < l1) | (n2-1 < l2) | (n3-1 < l3) | (n4-1 < l4) 
@@ -200,7 +200,7 @@ end
 
 
 
-@memoize function round_brackets_1_equation(args)
+function round_brackets_1_equation(args)
     n1, n2, n3, n4, l1_, l2_, l3, l4, xi1, xi2, xi3, xi4, l, sign, target = args
     l1 = l1_; l2 = l2_; 
     l_plus = -l - 1
@@ -227,7 +227,7 @@ end
     return ret / c0
 end
 
-@memoize function round_brackets_2_equation(args)
+function round_brackets_2_equation(args)
     n1, n2, n3, n4, l1, l2, l3_, l4_, xi1, xi2, xi3, xi4, l, sign, target = args
     l3 = l3_; l4 = l4_; 
     l_plus = -l - 1
@@ -254,9 +254,10 @@ end
     return ret / c0
 end
 
-# 
-@memoize function round_brackets(args)
+# @memoize
+function round_brackets(args)
     n1, n2, n3, n4, l1, l2, l3, l4, xi1, xi2, xi3, xi4, sign, l = args
+    # println("round_brackets", n1, " ", n2, " ", n3, " ", n4, " | ", l1, " ", l2, " ", l3, " ", l4, " | ", xi1, " ", xi2, " ", xi3, " ", xi4, " | ", sign, " ", l)
     rtol=1e-8
     if (n1-1 < l1) | (n2-1 < l2) | (n3-1 < l3) | (n4-1 < l4) 
         return 0.
